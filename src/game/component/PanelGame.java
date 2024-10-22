@@ -1,5 +1,6 @@
 package game.component;
 
+import game.obj.Bullet;
 import game.obj.Enermy;
 import game.obj.Player;
 
@@ -20,6 +21,7 @@ public class PanelGame extends JComponent {
     private Thread thread;
     private boolean start = true;
     private Key key;
+    private int shotTime;
 
     //Game FPS
     private final int FPS = 60;
@@ -27,6 +29,7 @@ public class PanelGame extends JComponent {
 
     //Game Object
     private Player player;
+    private List<Bullet> bullets;
     private List<Enermy> enermies;
 
     public void start(){
@@ -112,64 +115,117 @@ public class PanelGame extends JComponent {
         key = new Key();
         requestFocus();
         addKeyListener(new KeyAdapter(){
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_A){
-                    key.setKey_left(true);
-                } else if(e.getKeyCode() == KeyEvent.VK_D){
-                    key.setKey_right(true);
-                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    key.setKey_space(true);
-                } else if(e.getKeyCode() == KeyEvent.VK_J){
-                    key.setKey_j(true);
-                } else if(e.getKeyCode() == KeyEvent.VK_K){
-                    key.setKey_k(true);
-                }
-            }
 
+            //+++++++++++++ DI CHUYỂN KIỂu NGƯỜI
             @Override
-            public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_A){
-                    key.setKey_left(false);
-                } else if(e.getKeyCode() == KeyEvent.VK_D){
-                    key.setKey_right(false);
-                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    key.setKey_space(false);
-                } else if(e.getKeyCode() == KeyEvent.VK_J){
-                    key.setKey_j(false);
-                } else if(e.getKeyCode() == KeyEvent.VK_K){
-                    key.setKey_k(false);
-                }
-            }
+public void keyPressed(KeyEvent e) {
+    if(e.getKeyCode() == KeyEvent.VK_A){
+        key.setKey_left(true);
+    } else if(e.getKeyCode() == KeyEvent.VK_D){
+        key.setKey_right(true);
+    } else if(e.getKeyCode() == KeyEvent.VK_W){
+        key.setKey_up(true);
+    } else if(e.getKeyCode() == KeyEvent.VK_S){
+        key.setKey_down(true);
+    }
+}
+
+@Override
+public void keyReleased(KeyEvent e) {
+    if(e.getKeyCode() == KeyEvent.VK_A){
+        key.setKey_left(false);
+    } else if(e.getKeyCode() == KeyEvent.VK_D){
+        key.setKey_right(false);
+    } else if(e.getKeyCode() == KeyEvent.VK_W){
+        key.setKey_up(false);
+    } else if(e.getKeyCode() == KeyEvent.VK_S){
+        key.setKey_down(false);
+    }
+}
+
+
+
+
+            //+++++++++++DI CHUYỂN KIỂU PHI THUYỀN OLD
+            // @Override
+            // public void keyPressed(KeyEvent e) {
+            //     if(e.getKeyCode() == KeyEvent.VK_A){
+            //         key.setKey_left(true);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_D){
+            //         key.setKey_right(true);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+            //         key.setKey_space(true);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_J){
+            //         key.setKey_j(true);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_K){
+            //         key.setKey_k(true);
+            //     }
+            // }
+
+            // @Override
+            // public void keyReleased(KeyEvent e) {
+            //     if(e.getKeyCode() == KeyEvent.VK_A){
+            //         key.setKey_left(false);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_D){
+            //         key.setKey_right(false);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+            //         key.setKey_space(false);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_J){
+            //         key.setKey_j(false);
+            //     } else if(e.getKeyCode() == KeyEvent.VK_K){
+            //         key.setKey_k(false);
+            //     }
+            // }
         });
         new Thread(new Runnable() {
             @Override
             public void run() {
-                float s = 0.5f; //tăng góc độ khi người dùng ấn nút di chuyển
+
+                //===================DI CHUYỂN KIỂU NGƯỜI=============
+                float speed = 0.5f; // Tốc độ di chuyển
+
                 while(start){
-                    float angle = player.getAngle();
                     if(key.isKey_left()){
-                        angle -= s;
+                        player.changeLocation(player.getX() - speed, player.getY());
                     }
                     if(key.isKey_right()){
-                        angle += s;
+                        player.changeLocation(player.getX() + speed, player.getY());
                     }
-                    if(key.isKey_space()){
-                        player.speedUp();
+                    if(key.isKey_up()){
+                        player.changeLocation(player.getX(), player.getY() - speed);
                     }
-                    else{
-                        player.speedDown();
+                    if(key.isKey_down()){
+                        player.changeLocation(player.getX(), player.getY() + speed);
                     }
                     player.update();
-                    player.changeAngle(angle);
-                    for(int i = 0; i < enermies.size(); i++){
-                        Enermy enermy = enermies.get(i);
-                        if(enermy != null){
-                            enermy.update();
-                        }
-                    }
                     sleep(5);
                 }
+                //+++++++++++++ DI CHUYỂN KIỂU PHI THUYỀN=============
+                // float s = 0.5f; //tăng góc độ khi người dùng ấn nút di chuyển
+                // while(start){
+                //     float angle = player.getAngle();
+                //     if(key.isKey_left()){
+                //         angle -= s;
+                //     }
+                //     if(key.isKey_right()){
+                //         angle += s;
+                //     }
+                //     if(key.isKey_space()){
+                //         player.speedUp();
+                //     }
+                //     else{
+                //         player.speedDown();
+                //     }
+                //     player.update();
+                //     player.changeAngle(angle);
+                //     for(int i = 0; i < enermies.size(); i++){
+                //         Enermy enermy = enermies.get(i);
+                //         if(enermy != null){
+                //             enermy.update();
+                //         }
+                //     }
+                //     sleep(5);
+                // }
             }
         }).start();
     }
